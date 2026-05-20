@@ -6,14 +6,21 @@ FastAPI-сервис для работы с локальной LLM (Ollama) с �
 ## Архитектура
 
 ```
-Client (POST /ask)
-  ↓
-FastAPI Agent (Python)
-  ├→ Ollama (get full response)
-  ├→ Split into 105-byte segments
-  └→ Transport Layer (Go) × N segments
-  ↓
-returns {"status": "ok", "segments_sent": N}
+POST /ask { documentation, question }
+    ↓
+1. Генерация message_id (timestamp + uuid)
+    ↓
+2. Запрос к Ollama (localhost:11434/api/generate)
+   - Модель: qwen2.5:7b
+   - Режим: stream=False (полный ответ целиком)
+   - Таймаут: 300 секунд
+    ↓
+3. Разбиение ответа на 3 сегмента
+    ↓
+4. POST /segment на Go сервис (http://10.241.116.6:8080/segment)
+   Тело: { message_id, total_segments=3, segment_number=1..3, payload }
+    ↓
+5. Возврат клиенту: { status: "ok", segments_sent: 3, message_id }
 ```
 
 ## Ключевые особенности
