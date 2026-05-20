@@ -26,7 +26,7 @@ app.add_middleware(
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "qwen2.5:7b"
 TRANSPORT_API_URL = "http://10.241.116.6:8080/segment"
-REQUEST_TIMEOUT = 60.0
+REQUEST_TIMEOUT = 300.0
 NUM_SEGMENTS = 3  # всегда режем на 3 сегмента
 
 
